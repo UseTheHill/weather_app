@@ -1,15 +1,27 @@
 h1 {
     background-color: #85cf4f;
     color: #24424c;
+    margin: 0px;
 }
 
-:root {
+* {
     background-color: #24424c;
     color: #85cf4f;
 
+}
+.card {
+    background-color: #24424c;
+    color: #85cf4f;
+    
 }
 
 .main {
     background-color: #24424c;
     color: #85cf4f;
+}
+
+.searchBtn {
+    background-color: #85cf4f;
+    color: #24424c;
+    border: #24424c;
 }
