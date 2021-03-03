@@ -24,7 +24,7 @@ $(".searchBtn").onclick("click", function() {
         }
 
         else {
-            $("#search-history").append(userSearchP);
+            $("#search_history").append(userSearchP);
             userSearchArray.push(newCity);
             storeSearchHistory();
         }
@@ -35,3 +35,16 @@ $(".searchBtn").onclick("click", function() {
     }
     
 });
+
+//show weather data for appropriate city
+$("#search_history").on("click", ".searchHistoryBtn", function() {
+    let userSearch = $(this).attr("data-city");
+    getWeatherData(userSearch);
+    console.log('test')
+});
+
+// Store the users last search to localStorage
+function storeLastSearch() {
+  var userSearch = $("#userSearch").val();
+  localStorage.setItem("lastSearch", JSON.stringify(userSearch));
+};
