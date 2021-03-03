@@ -73,4 +73,40 @@ function init() {
         $("#search_history").append(userSearchP);
         userSearchArray.push(searchHistory[i]);        
     }
+};
+
+//generate the weather data
+function getWeatherData(userSearch) {
+    let queryURL = "https://api.openweathermap.org/data/2.5/forecast?q=" + userSearch + "&appid=67f078be990d29423078c6334abd8c25";
+
+    // Use lat and lon to generate URL to retrieve daily forecast
+$.ajax({
+    url: queryURL,
+    method: "GET"
+}).then(function(response) {
+    let lat = response.city.coord.lat;
+    let lon = response.city.coord.lon;
+
+    $("#cityName").text(response.city.name + " " + date);
+
+let newQueryURL = "https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&long" + lon + "&appid=67f078be990d29423078c6334abd8c25";
+
+    // ajax call to get daily forecast
+    $.ajax({
+    url: newQueryURL,
+    method: "GET"
+    }).then(function(response) {
+    console.log(newQueryURL)
+
+//update current day
+let currentTempK = response.curent.temp;
+let currentTempF = ((currentTempK - 273.15) * 1.80 + 32).toFixed(0);
+
+$("#currentTemp").text("Temperature: " + currentTempF);
+$("#currentHumidity").text("Humidity: " + response.current.humidity + "%");
+$("#currentWS").text("Wind Speed: " + response.current.wind_speed + "MPH");
+$("#uvIndex").text(response.current.uvi);
+$("#main-weather-icon").addClass("large-icon");
+$("#main-weather-icon").attr("src", "http://openweathermap.org/img/wn/" + response.current.weather[0].icon + "@2x.png");
+
 }
