@@ -1,30 +1,30 @@
-//global variables
-let dateClass = $(".date").toArray();
-let tempClass = $(".temp").toArray();
-let humidityClass = $(".humidity").toArray();
-let date = moment().format("L");
-let iconArray = $(".weather_icon").toArray();
-let SearchHistoryBtn = $(".searchBtn").toArray();
-let userSearchArray = [];
+var tempClass = $(".temp").toArray();
+var humidityClass = $(".humidity").toArray();
+var dateClass = $(".date").toArray();
+var date = moment().format("L");
+var iconArray = $(".weather-icon").toArray();
+var searchHistoryArray = $(".searchBtn").toArray();
+var userSearchArray = [];
 
-/// User clicks the "search button", generate weather data for that city
+
+// When the user clicks the "search button", generate weather data for that city
 $(".searchBtn").on("click", function() {
-    event.preventDefault();
-    userSearch = $("#userSearch").val();
+  event.preventDefault();
+  userSearch = $("#userSearch").val();
 
-    // Append user search to search history unless that city is already in their search history
-    if ($("#userSearch").val() !== "") {
-    let userSearchP = $("<button>" + userSearch + "</button>");
+  // Append user search to search history unless that city is already in their search history
+  if ($("#userSearch").val() !== "") {
+    var userSearchP = $("<button>" + userSearch + "</button>");
     userSearchP.attr("data-city", $("#userSearch").val());
     userSearchP.addClass("searchHistoryBtn btn btn-outline-primary");
 
-    let newCity = userSearchP.attr("data-city");
+    var newCity = userSearchP.attr("data-city");
 
     if (userSearchArray.includes(newCity)) {
         }
 
     else {
-        $("#search_history").append(userSearchP);
+        $("#search-history").append(userSearchP);
         userSearchArray.push(newCity);
         storeSearchHistory();
         }
@@ -32,107 +32,112 @@ $(".searchBtn").on("click", function() {
     getWeatherData(userSearch);
     storeLastSearch();
     $("#userSearch").val("");
-    }
+  }
 
 });
 
-//show weather data for searched city
-$("#search_history").on("click", ".searchHistoryBtn", function() {
-    let userSearch = $(this).attr("data-city");
-    getWeatherData(userSearch);
-    console.log('test')
+// Show weather data for appropriate city if user clicks on search history button
+$("#search-history").on("click", ".searchHistoryBtn", function() {
+  var userSearch = $(this).attr("data-city");
+  getWeatherData(userSearch);
+  console.log('test')
 });
 
 // Store the users last search to localStorage
 function storeLastSearch() {
-let userSearch = $("#userSearch").val();
-localStorage.setItem("lastSearch", JSON.stringify(userSearch));
+  var userSearch = $("#userSearch").val();
+  localStorage.setItem("lastSearch", JSON.stringify(userSearch));
 };
 
 // Store user search history to localStorage
 function storeSearchHistory() {
-    localStorage.setItem("searchHistory", JSON.stringify(userSearchArray))
+  localStorage.setItem("searchHistory", JSON.stringify(userSearchArray))
 };
 
+// Show weather data for last userSearch and re-append user history
 function init() {
-    let lastSearch = JSON.parse(localStorage.getItem("lastSearch"));
-    let searchHistory = JSON.parse(localStorage.getItem("searchHistory"));
+  var lastSearch = JSON.parse(localStorage.getItem("lastSearch"));
+  var searchHistory = JSON.parse(localStorage.getItem("searchHistory"));
 
-    if (userSearch !== null) {
-        getWeatherData(lastSearch);
-    }
+  if (userSearch !== null) {
+    getWeatherData(lastSearch);
+  }
 
-    else if (userSearch === null) {
+  else if (userSearch === null) {
 
-    };
+  };
 
-    for (let i = 0; i < searchHistory.length; i++) {
-        let userSearchP = $("<button>" + searchHistory[i] + "</button>");
-        userSearchP.attr("data-city", searchHistory[i]);
-        userSearchP.addClass("searchHistoryBtn btn btn-outline-primary");
-        $("#search_history").append(userSearchP);
-        userSearchArray.push(searchHistory[i]);        
-    }
+  for (var i=0; i<searchHistory.length; i++) {
+    var userSearchP = $("<button>" + searchHistory[i] + "</button>");
+    userSearchP.attr("data-city", searchHistory[i]);
+    userSearchP.addClass("searchHistoryBtn btn btn-outline-primary");
+    $("#search-history").append(userSearchP);
+    userSearchArray.push(searchHistory[i])
+  }
 };
 
-//generate the weather data
+// Generate the weather data
 function getWeatherData(userSearch) {
-    let queryURL = "https://api.openweathermap.org/data/2.5/forecast?q=" + userSearch + "&appid=67f078be990d29423078c6334abd8c25";
 
-    // Use lat and lon to generate URL to retrieve daily forecast
+    var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q=" + userSearch + "&appid=67f078be990d29423078c6334abd8c25";
+
+
+  // Use lat and lon to generate URL to retrieve daily forecast
+  $.ajax({
+    url: queryURL,
+    method: "GET"
+  }).then(function(response) {
+      var lat = response.city.coord.lat;
+      var lon = response.city.coord.lon;
+
+      $("#cityName").text(response.city.name + " " + date);
+
+      var newQueryURL = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&exclude=minutely,hourly&appid=67f078be990d29423078c6334abd8c25";
+
+    // ajax call to get daily forecast
     $.ajax({
-        url: queryURL,
-        method: "GET"
+      url: newQueryURL,
+      method: "GET"
     }).then(function(response) {
-        let lat = response.city.coord.lat;
-        let lon = response.city.coord.lon;
+      console.log(newQueryURL)
 
-        $("#cityName").text(response.city.name + " " + date);
+      // Update current day
+      var currentTempK = response.current.temp;
+      var currentTempF = ((currentTempK - 273.15) * 1.80 + 32).toFixed(0); 
 
-    let newQueryURL = "https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&long" + lon + "&appid=67f078be990d29423078c6334abd8c25";
+      $("#currentTemp").text("Temperature: " + currentTempF);
+      $("#currentHumidity").text("Humidity: " + response.current.humidity + "%");
+      $("#currentWS").text("Wind Speed: " + response.current.wind_speed + " MPH");
+      $("#uvIndex").text(response.current.uvi);
+      $("#main-weather-icon").addClass("large-icon");
+      $("#main-weather-icon").attr("src", "http://openweathermap.org/img/wn/" + response.current.weather[0].icon + "@2x.png");
 
-        // ajax call to get daily forecast
-        $.ajax({
-        url: newQueryURL,
-        method: "GET"
-        }).then(function(response) {
-        console.log(newQueryURL)
+      // Update 5-day forecast
+      for (var i=0; i<5; i++) {
+        var daily = response.daily;
+        var tempK = daily[i].temp.day;
+        var tempF =  ((tempK - 273.15) * 1.80 + 32).toFixed(0);
+        var humidity = daily[i].humidity;
+        var icon = daily[i].weather[0].icon;
 
-    //update current day
-    let currentTempK = response.curent.temp;
-    let currentTempF = ((currentTempK - 273.15) * 1.80 + 32).toFixed(0);
+        tempClass[i].innerHTML = "Temp: " + tempF;
+        humidityClass[i].innerHTML = "Humidity: " + humidity + "%";
+        $(".weather-icon").addClass("small-icon");
+        iconArray[i].setAttribute("src", "http://openweathermap.org/img/wn/" + icon + "@2x.png");
+        
+      }
 
-    $("#currentTemp").text("Temperature: " + currentTempF);
-    $("#currentHumidity").text("Humidity: " + response.current.humidity + "%");
-    $("#currentWS").text("Wind Speed: " + response.current.wind_speed + "MPH");
-    $("#uvIndex").text(response.current.uvi);
-    $("#main-weather-icon").addClass("large-icon");
-    $("#main-weather-icon").attr("src", "http://openweathermap.org/img/wn/" + response.current.weather[0].icon + "@2x.png");
+      // Update dates
+      for (var j=0; j<dateClass.length; j++) {
 
-    //5day forecast
-    for (let i = 0; i < 5; i++) {
-        let daily = response.daily;
-        let tempK = daily[i].temp.day;
-        let tempF = ((tempK - 273.15) * 1.80 + 32).toFixed(0);
-        let humidity = daily[i].humidity;
-        let icon = daily[i].weather[0].icon;
-
-        tempClass[i].innerHTML = "Temperature: " + tempF;
-        humidityClass[i].innerHTML = "Humidiity: " + humidity + "%";
-        $(".weather_icon").addClass("small-icon");
-        iconArray[i].setAttribute("src", "http://openweathermap.org/img/wn/" + icon + "@2x.png");   
-    }
-
-    for (let j=0; j<dateClass.length; j++) {
-        let newDate = moment().add(1+j, 'days');
-        formatNewDate = newDate.format("L");
-        dateClass[j].innerHTML = formatNewDate;
-    }
-
+      var newDate = moment().add(1+j, 'days');
+      formatNewDate = newDate.format("L");
+      dateClass[j].innerHTML = formatNewDate;
+      }
 
     });
 
-});
+  });
 };
 
 init();
