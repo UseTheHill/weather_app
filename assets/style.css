@@ -1,27 +1,19 @@
-h1 {
-    background-color: #85cf4f;
-    color: #24424c;
-    margin: 0px;
+.large-icon {
+    height: 70px;
+    width: 70px;
 }
 
-* {
-    background-color: #24424c;
-    color: #85cf4f;
-
-}
-.card {
-    background-color: #24424c;
-    color: #85cf4f;
-    
+.small-icon {
+    height: 70px;
+    width: 70px;
+    border: none;
 }
 
-.main {
-    background-color: #24424c;
-    color: #85cf4f;
+.city-name {
+    display: inline;
+    position: relative;
 }
 
-.searchBtn {
-    background-color: #85cf4f;
-    color: #24424c;
-    border: #24424c;
+.uv-index {
+    background: red;
 }
