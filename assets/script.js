@@ -80,48 +80,59 @@ function getWeatherData(userSearch) {
     let queryURL = "https://api.openweathermap.org/data/2.5/forecast?q=" + userSearch + "&appid=67f078be990d29423078c6334abd8c25";
 
     // Use lat and lon to generate URL to retrieve daily forecast
-$.ajax({
-    url: queryURL,
-    method: "GET"
-}).then(function(response) {
-    let lat = response.city.coord.lat;
-    let lon = response.city.coord.lon;
-
-    $("#cityName").text(response.city.name + " " + date);
-
-let newQueryURL = "https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&long" + lon + "&appid=67f078be990d29423078c6334abd8c25";
-
-    // ajax call to get daily forecast
     $.ajax({
-    url: newQueryURL,
-    method: "GET"
+        url: queryURL,
+        method: "GET"
     }).then(function(response) {
-    console.log(newQueryURL)
+        let lat = response.city.coord.lat;
+        let lon = response.city.coord.lon;
 
-//update current day
-let currentTempK = response.curent.temp;
-let currentTempF = ((currentTempK - 273.15) * 1.80 + 32).toFixed(0);
+        $("#cityName").text(response.city.name + " " + date);
 
-$("#currentTemp").text("Temperature: " + currentTempF);
-$("#currentHumidity").text("Humidity: " + response.current.humidity + "%");
-$("#currentWS").text("Wind Speed: " + response.current.wind_speed + "MPH");
-$("#uvIndex").text(response.current.uvi);
-$("#main-weather-icon").addClass("large-icon");
-$("#main-weather-icon").attr("src", "http://openweathermap.org/img/wn/" + response.current.weather[0].icon + "@2x.png");
+    let newQueryURL = "https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&long" + lon + "&appid=67f078be990d29423078c6334abd8c25";
 
-//5day forecast
-for (let i = 0; i < 5; i++) {
-    let daily = response.daily;
-    let tempK = daily[i].temp.day;
-    let tempF = ((tempK - 273.15) * 1.80 + 32).toFixed(0);
-    let humidity = daily[i].humidity;
-    let icon = daily[i].weather[0].icon;
+        // ajax call to get daily forecast
+        $.ajax({
+        url: newQueryURL,
+        method: "GET"
+        }).then(function(response) {
+        console.log(newQueryURL)
 
-    tempClass[i].innerHTML = "Temperature: " + tempF;
-    humidityClass[i].innerHTML = "Humidiity: " + humidity + "%";
-    $(".weather_icon").addClass("small-icon");
-    iconArray[i].setAttribute("src", "http://openweathermap.org/img/wn/" + icon + "@2x.png");
-    
-}
+    //update current day
+    let currentTempK = response.curent.temp;
+    let currentTempF = ((currentTempK - 273.15) * 1.80 + 32).toFixed(0);
 
-}
+    $("#currentTemp").text("Temperature: " + currentTempF);
+    $("#currentHumidity").text("Humidity: " + response.current.humidity + "%");
+    $("#currentWS").text("Wind Speed: " + response.current.wind_speed + "MPH");
+    $("#uvIndex").text(response.current.uvi);
+    $("#main-weather-icon").addClass("large-icon");
+    $("#main-weather-icon").attr("src", "http://openweathermap.org/img/wn/" + response.current.weather[0].icon + "@2x.png");
+
+    //5day forecast
+    for (let i = 0; i < 5; i++) {
+        let daily = response.daily;
+        let tempK = daily[i].temp.day;
+        let tempF = ((tempK - 273.15) * 1.80 + 32).toFixed(0);
+        let humidity = daily[i].humidity;
+        let icon = daily[i].weather[0].icon;
+
+        tempClass[i].innerHTML = "Temperature: " + tempF;
+        humidityClass[i].innerHTML = "Humidiity: " + humidity + "%";
+        $(".weather_icon").addClass("small-icon");
+        iconArray[i].setAttribute("src", "http://openweathermap.org/img/wn/" + icon + "@2x.png");   
+    }
+
+    for (let j=0; j<dateClass.length; j++) {
+        let newDate = moment().add(1+j, 'days');
+        formatNewDate = newDate.format("L");
+        dateClass[j].innerHTML = formatNewDate;
+    }
+
+
+    });
+
+});
+};
+
+init();
