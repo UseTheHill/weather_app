@@ -109,4 +109,19 @@ $("#uvIndex").text(response.current.uvi);
 $("#main-weather-icon").addClass("large-icon");
 $("#main-weather-icon").attr("src", "http://openweathermap.org/img/wn/" + response.current.weather[0].icon + "@2x.png");
 
+//5day forecast
+for (let i = 0; i < 5; i++) {
+    let daily = response.daily;
+    let tempK = daily[i].temp.day;
+    let tempF = ((tempK - 273.15) * 1.80 + 32).toFixed(0);
+    let humidity = daily[i].humidity;
+    let icon = daily[i].weather[0].icon;
+
+    tempClass[i].innerHTML = "Temperature: " + tempF;
+    humidityClass[i].innerHTML = "Humidiity: " + humidity + "%";
+    $(".weather_icon").addClass("small-icon");
+    iconArray[i].setAttribute("src", "http://openweathermap.org/img/wn/" + icon + "@2x.png");
+    
+}
+
 }
