@@ -1,3 +1,4 @@
+//general variables
 let tempClass = $(".temp").toArray();
 let humidityClass = $(".humidity").toArray();
 let dateClass = $(".date").toArray();
@@ -7,12 +8,11 @@ let searchHistoryArray = $(".searchBtn").toArray();
 let userSearchArray = [];
 
 
-// When the user clicks the "search button", generate weather data for that city
+// click button and get weather of city searched
 $(".searchBtn").on("click", function() {
 event.preventDefault();
 userSearch = $("#userSearch").val();
 
-  // Append user search to search history unless that city is already in their search history
 if ($("#userSearch").val() !== "") {
     let userSearchP = $("<button>" + userSearch + "</button>");
     userSearchP.attr("data-city", $("#userSearch").val());
@@ -36,7 +36,7 @@ if ($("#userSearch").val() !== "") {
 
 });
 
-// Show weather data for appropriate city if user clicks on search history button
+
 $("#search-history").on("click", ".searchHistoryBtn", function() {
 let userSearch = $(this).attr("data-city");
 getWeatherData(userSearch);
@@ -54,7 +54,7 @@ function storeSearchHistory() {
 localStorage.setItem("searchHistory", JSON.stringify(userSearchArray))
 };
 
-// Show weather data for last userSearch and re-append user history
+
 function init() {
 let lastSearch = JSON.parse(localStorage.getItem("lastSearch"));
 let searchHistory = JSON.parse(localStorage.getItem("searchHistory"));
@@ -82,7 +82,7 @@ function getWeatherData(userSearch) {
     let queryURL = "https://api.openweathermap.org/data/2.5/forecast?q=" + userSearch + "&appid=67f078be990d29423078c6334abd8c25";
 
 
-  // Use lat and lon to generate URL to retrieve daily forecast
+  // Use latitude and longitude to generate URL to retrieve daily forecast
 $.ajax({
     url: queryURL,
     method: "GET"
@@ -94,14 +94,14 @@ $.ajax({
 
     let newQueryURL = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&exclude=minutely,hourly&appid=67f078be990d29423078c6334abd8c25";
 
-    // ajax call to get daily forecast
+    
     $.ajax({
     url: newQueryURL,
     method: "GET"
     }).then(function(response) {
     console.log(newQueryURL)
 
-      // Update current day
+      // current day
     let currentTempK = response.current.temp;
     let currentTempF = ((currentTempK - 273.15) * 1.80 + 32).toFixed(0); 
 
@@ -112,7 +112,7 @@ $.ajax({
     $("#main-weather-icon").addClass("large-icon");
     $("#main-weather-icon").attr("src", "http://openweathermap.org/img/wn/" + response.current.weather[0].icon + "@2x.png");
 
-      // Update 5-day forecast
+      // 5-day forecast
     for (let i=0; i<5; i++) {
         let daily = response.daily;
         let tempK = daily[i].temp.day;
