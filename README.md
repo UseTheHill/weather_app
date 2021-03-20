@@ -16,7 +16,7 @@ https://usethehill.github.io/weather_app/
 - HTML
 - CSS
 - JavaScript
-- Bootsrap
+- Bootstrap
 
 
 ## License
